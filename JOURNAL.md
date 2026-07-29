@@ -41,7 +41,7 @@ and touches only test fixtures/assertions, not the scorer logic itself.
 
 ## Week 8 — Reproduction & solution planning
 
-**Reproduction commit link:** [link to the commit documenting the reproduced issue]
+**Reproduction commit link:** https://github.com/Vyou13/pathreview/commit/9cabf41ec7a901d637737c94414c5469f02eb2ff
 
 **Reproduction summary:**
 Installed the project dependencies (a missing `structlog` dependency was
