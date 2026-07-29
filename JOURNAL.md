@@ -6,7 +6,7 @@
 
 **Issue title:** README scorer test fixture is too short for its own word-count assertion
 
-**Tier:** [x] Tier 1  [ ] Tier 2  [ ] Tier 3
+**Tier:** [x] Tier 1 [ ] Tier 2 [ ] Tier 3
 
 **Problem summary:**
 The `test_readme_with_all_quality_signals` unit test in the README scorer test
@@ -38,3 +38,31 @@ and touches only test fixtures/assertions, not the scorer logic itself.
   failing assertion (`assert 51 > 100`), so I can verify the fix objectively.
 - **Tier 1 / good first issue:** Labeled appropriately for an onboarding-scoped
   contribution, matching where I am in the module.
+
+## Week 8 — Reproduction & solution planning
+
+**Reproduction commit link:** [link to the commit documenting the reproduced issue]
+
+**Reproduction summary:**
+Installed the project dependencies (a missing `structlog` dependency was
+initially blocking test collection) and ran `pytest tests/unit/test_readme_scorer.py -q`.
+`TestReadmeScorer.test_readme_with_all_quality_signals` fails with `assert 51 > 100`
+at `tests/unit/test_readme_scorer.py:56` (1 failed, 22 passed). The captured log
+shows the scorer correctly returns `category=minimal word_count=51` for the
+fixture — so the scorer is behaving correctly and the fixture README (~51 words)
+is simply too short to reach the `word_count > 100` / `"comprehensive"` threshold
+the test asserts. The test's own input doesn't match its stated intent.
+
+**PLAN.md link:** https://github.com/Vyou13/pathreview/blob/test/156-readme-scorer-fixture-word-count/plan.md
+
+**Walkthrough picture:** ![alt text](image.png)
+
+**Blockers or open questions:**
+The scorer lives in `agent/tools/readme_scorer.py` (`ReadmeScorer`) and the
+fixture is an inline string in the test method, so the edit is self-contained.
+Before writing the extended fixture in Week 9 I still need to confirm from the
+scorer source how `word_count` is computed (raw whitespace split vs.
+markdown/code stripped — the current 51-word count over a many-line fixture
+suggests only prose words count) and the exact category boundary, so I can size
+the fixture past 100 words without overshooting the "comprehensive" band or
+breaking the other assertions in the same test.
