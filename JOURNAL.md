@@ -53,7 +53,7 @@ fixture — so the scorer is behaving correctly and the fixture README (~51 word
 is simply too short to reach the `word_count > 100` / `"comprehensive"` threshold
 the test asserts. The test's own input doesn't match its stated intent.
 
-**PLAN.md link:** https://github.com/Vyou13/pathreview/blob/test/156-readme-scorer-fixture-word-count/plan.md
+**PLAN.md link:** https://github.com/Vyou13/pathreview/blob/test/156-readme-scorer-fixture-word-count/PLAN.md
 
 **Walkthrough picture:** ![alt text](image.png)
 
@@ -66,3 +66,59 @@ markdown/code stripped — the current 51-word count over a many-line fixture
 suggests only prose words count) and the exact category boundary, so I can size
 the fixture past 100 words without overshooting the "comprehensive" band or
 breaking the other assertions in the same test.
+
+## Week 9 — Solution building & PR submission
+
+### Check-in 1 (mid-week)
+
+**Current progress:**
+Read `agent/tools/readme_scorer.py` to confirm the two Week 8 unknowns (PLAN.md
+steps 1–2). `word_count` is a plain `len(content.split())`, and the category
+boundaries are `<100` minimal, `<500` adequate, `>=500` comprehensive — so
+reaching `"comprehensive"` requires **500+ words**, not the ~150 I had estimated
+in PLAN.md. That's the key correction this week: to satisfy both
+`word_count > 100` **and** `word_count_category == "comprehensive"` the fixture
+must clear 500 words.
+
+**Next steps:**
+Rewrite the inline `readme` fixture to ~500+ words of realistic prose while
+preserving every quality signal the test checks (heading, install/usage code
+blocks, features + tech-stack lists, two badges, live-demo link), then run the
+file and the full unit suite, and open the PR.
+
+**Blockers:**
+None.
+
+---
+
+### Check-in 2 (end of week)
+
+**PR link:** https://github.com/ascherj/pathreview/pull/844
+
+**Branch:** `test/156-readme-scorer-fixture-word-count`
+
+**What you built:**
+Extended the inline fixture in `test_readme_with_all_quality_signals` from ~51 to
+~526 words of realistic README prose, keeping every quality signal the test
+asserts. The scorer now returns `word_count=526` and
+`word_count_category="comprehensive"`, so the test validates its stated intent.
+No production code changed — the scorer was already correct; the test's input was
+the bug.
+
+**Tests added or updated:**
+`tests/unit/test_readme_scorer.py` — updated the fixture in
+`test_readme_with_all_quality_signals`. It now genuinely exercises the
+`comprehensive` word-count branch and its `overall_score > 0.7` assertion. Suite
+goes from `1 failed / 22 passed` to `23 passed`.
+
+**Self-review confirmation:** [ ] make check passes  [ ] make test-unit passes
+
+> Note: repo-wide `make check` and `make test-unit` do **not** pass, but the
+> failures are pre-existing and unrelated to this change (other open seeded
+> issues such as #149 and #150). For the touched file:
+> `pytest tests/unit/test_readme_scorer.py` → 23 passed, and
+> `ruff check tests/unit/test_readme_scorer.py` → clean. Verified the same
+> unrelated tests fail with my change stashed, and only the readme-scorer test
+> flips from red to green.
+
+**Draft PR feedback received from:** none
