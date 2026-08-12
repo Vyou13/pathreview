@@ -129,3 +129,74 @@ goes from `1 failed / 22 passed` to `23 passed`.
 > fixture-only fix and is not achievable without resolving the other open issues.
 
 **Draft PR feedback received from:** none
+
+## Week 10 — Iteration & reflection
+
+### Reviewer feedback
+
+**Feedback received:** [ ] Yes  [x] No — still awaiting review
+
+**Summary of feedback:**
+No reviewer or maintainer feedback arrived. PR #844 is still open with 0 reviews
+and 0 comments. (Per the Summer 2026 course note, reviewer feedback isn't a
+feature this term, so this is expected rather than a sign the PR was overlooked.)
+
+**How you responded:**
+No changes were required since no feedback came in. I kept the PR open and
+ready for review, and re-verified before the deadline that the branch is pushed,
+the PR is live, and `pytest tests/unit/test_readme_scorer.py` still reports
+23 passed.
+
+---
+
+### Reflection
+
+**What was harder than you expected?**
+The hardest part was resisting the reflex to "fix the code" and instead proving
+the code was already correct. When a test fails, the instinct is that the thing
+under test is broken — but here `ReadmeScorer` was behaving exactly right and the
+*test's own fixture* was the bug. Convincing myself of that meant reading the
+scorer source, checking the captured log (`category=minimal word_count=51`), and
+stashing my change to confirm the same unrelated tests failed with or without it.
+The other genuinely hard thing was that my Week 8 plan was wrong: I estimated the
+fixture needed ~150 words, but the "comprehensive" tier actually starts at 500,
+so I had to write a far larger fixture than I'd scoped.
+
+**What did you learn about working in a large codebase?**
+That "the tests pass" is not a clean binary in a real repo. Running
+`make test-unit` surfaced ~52 failures that had nothing to do with my issue —
+they belonged to other open issues (#149, #150, and others). On my own projects a
+red suite means *I* broke something; here I had to learn to scope "does my change
+work?" down to the specific file I touched, and to *prove* my change added no new
+failures rather than assume it. I also learned to respect boundaries I didn't set:
+the fix had to preserve every quality signal the test already checked (heading,
+code blocks, badges, tech-stack list, demo link), so "just add words" was actually
+"add words without disturbing any of the existing structure."
+
+**How did AI tools help — and where did they fall short?**
+AI was most useful for fast orientation and mechanics: locating the scorer and
+test, reading how `word_count` is computed (`len(content.split())`), running the
+before/after comparison, and drafting the fixture prose to a target word count.
+Where it fell short was judgment calls that were mine to own — deciding to *extend
+the fixture* rather than weaken the assertion (which would have passed the test
+while silently killing its coverage), and deciding how to honestly represent the
+`make check` / `make test-unit` self-review boxes when the repo-wide suite fails
+for unrelated reasons. AI could lay out the options, but choosing the honest
+framing (checked boxes *with* a disclosure) was a decision I had to make.
+
+**What would you do differently if you started over?**
+I'd read the scorer's tier thresholds *before* writing the Week 8 plan instead of
+guessing the word target — confirming that "comprehensive" means >= 500 words up
+front would have saved a wrong estimate. I'd also verify the exact category
+boundaries and word-counting method as step one of planning, since those two
+facts drove the entire fix. On process, I'd sanity-check the repo's baseline
+(`make test-unit` on a clean checkout) at the very start, so I wasn't surprised
+later by pre-existing failures.
+
+**What are you most proud of from this module?**
+Diagnosing that the scorer was correct and the *test* was wrong — and then fixing
+it the honest way. It would have been easier to change `> 100` to `> 40` and make
+the failure disappear, but that would have quietly dropped coverage of the
+comprehensive branch. Choosing the fix that keeps the test meaningful, and being
+transparent in the journal about what does and doesn't pass, is the thing I'd
+stand behind.
